@@ -50,3 +50,4 @@ venv/
 
 # Unified training outputs
 outputs/
+requirements_full.txt
