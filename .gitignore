@@ -46,3 +46,7 @@ venv/
 # Misc
 # ============================================================
 .DS_Store
+*.bak
+
+# Unified training outputs
+outputs/

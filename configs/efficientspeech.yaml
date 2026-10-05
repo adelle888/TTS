@@ -1,0 +1,53 @@
+model_name: efficientspeech
+dataset: LJSpeech
+preprocess:
+  dataset: LJSpeech
+  path:
+    corpus_path: /data/huawei/liufei/TTS/FastSpeech2/raw_data/LJSpeech-1.1
+    lexicon_path: lexicon/librispeech-lexicon.txt
+    raw_path: ./EfficientSpeech/raw_data/LJSpeech
+    preprocessed_path: /data/huawei/liufei/TTS/EfficientSpeech/preprocessed_data/LJSpeech
+  preprocessing:
+    val_size: 512
+    text:
+      language: en
+      text_cleaners:
+      - english_cleaners
+      max_length: 4096
+    audio:
+      sampling_rate: 22050
+      max_wav_value: 32768.0
+    stft:
+      filter_length: 1024
+      hop_length: 256
+      win_length: 1024
+    mel:
+      n_mel_channels: 80
+      mel_fmin: 0
+      mel_fmax: 8000
+    pitch:
+      feature: phoneme_level
+      normalization: true
+    energy:
+      feature: phoneme_level
+      normalization: true
+model:
+  depth: 2
+  n_blocks: 2
+  block_depth: 2
+  reduction: 4
+  head: 1
+  embed_dim: 128
+  kernel_size: 3
+  decoder_kernel_size: 5
+  expansion: 1
+  vocab_size: 153
+train:
+  lr: 0.001
+  weight_decay: 1.0e-05
+  max_epochs: 1
+runtime:
+  infer_device: cuda
+  verbose: true
+  wav_path: val_outputs
+  hifigan_checkpoint: hifigan/LJ_V2/generator_v2
