@@ -15,10 +15,10 @@ ASR_config: models/styletts2_modules/Utils/ASR/config.yml
 ASR_path: models/styletts2_modules/Utils/ASR/epoch_00080.pth
 PLBERT_dir: models/styletts2_modules/Utils/PLBERT
 data_params:
-  train_data: datasets/styletts2_data/train_list.txt
-  val_data: datasets/styletts2_data/val_list.txt
+  train_data: StyleTTS2/Dataset/Data/train_list.txt
+  val_data: StyleTTS2/Dataset/Data/val_list.txt
   root_path: data/LJSpeech-1.1/wavs
-  OOD_data: datasets/styletts2_data/OOD_texts.txt
+  OOD_data: StyleTTS2/Dataset/Data/OOD_texts.txt
   min_length: 50
 preprocess_params:
   sr: 24000
