@@ -2,23 +2,23 @@
 
 A unified repository for reproducing and validating multiple Text-to-Speech (TTS) models.
 
-This repository currently contains reproducible implementations of:
+## Supported Models
 
-- **FastSpeech2**
-- **EfficientSpeech**
-- **StyleTTS2**
+- FastSpeech2
+- EfficientSpeech
+- StyleTTS2
 
-The original projects have been reorganized into a common repository structure so that model definitions, datasets, configurations, training scripts, and validation scripts can be managed consistently.
+The purpose of this repository is to reorganize different TTS projects into a common structure and provide a minimal reproducible workflow:
 
-The current goal is **minimal reproducibility** rather than reproducing every experiment or evaluation metric reported in the original papers.
+```text
+Dataset → Model → Training → Checkpoint → Validation
+```
 
-The following workflow has been verified for each model:
-
-> **Dataset → Model → Training → Checkpoint → Validation**
+The current goal is functional reproduction rather than reproducing every experiment and metric reported in the original papers.
 
 ---
 
-## 1. Repository Structure
+## Repository Structure
 
 ```text
 TTS/
@@ -31,23 +31,16 @@ TTS/
 │   └── styletts2.yaml
 │
 ├── datasets/
+│   ├── __init__.py
 │   ├── fastspeech2.py
 │   ├── efficientspeech.py
-│   ├── styletts2.py
-│   └── styletts2_data/
-│       ├── train_list.txt
-│       ├── val_list.txt
-│       └── OOD_texts.txt
+│   └── styletts2.py
 │
 ├── models/
 │   ├── fastspeech2.py
 │   ├── efficientspeech.py
 │   ├── styletts2.py
 │   └── styletts2_modules/
-│       ├── models.py
-│       ├── losses.py
-│       ├── Modules/
-│       └── Utils/
 │
 ├── training/
 │   ├── fastspeech2.py
@@ -59,76 +52,115 @@ TTS/
 │   ├── efficientspeech.py
 │   └── styletts2.py
 │
-├── data/
-│   └── LJSpeech-1.1/
-│       └── wavs/
-│
-├── outputs/
-│
 ├── requirements.txt
 ├── .gitignore
 └── README.md
 ```
 
-The main unified components are:
+Each model follows the same organization:
 
-| Directory | Description |
-|---|---|
-| `models/` | Model implementations |
-| `datasets/` | Dataset loading and preprocessing interfaces |
-| `configs/` | Model and dataset configurations |
-| `training/` | Minimal training pipelines |
-| `validation/` | Validation pipelines |
-| `common/` | Shared utility functions |
-| `outputs/` | Generated checkpoints and outputs |
+- `datasets/` — dataset loading
+- `models/` — model implementation
+- `configs/` — model and dataset configuration
+- `training/` — training scripts
+- `validation/` — validation scripts
+- `common/` — shared utilities
 
 ---
 
-## 2. Models
+## Environment
 
-### FastSpeech2
+The repository has been tested with:
 
-FastSpeech2 is a non-autoregressive TTS model based on Transformer-style encoder/decoder components and explicit variance prediction.
+```text
+Python 3.10
+PyTorch 2.7.0
+CUDA 12.8
+NVIDIA GeForce RTX 5090
+```
 
-The unified implementation contains the components required for the minimal reproduction workflow, including:
+Install dependencies with:
 
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Dataset
+
+The current experiments use the LJSpeech dataset.
+
+Audio files are stored locally and are not included in this repository.
+
+Expected audio path:
+
+```text
+data/LJSpeech-1.1/wavs
+```
+
+StyleTTS2 metadata is currently read from the local upstream StyleTTS2 data files:
+
+```text
+StyleTTS2/Dataset/Data/train_list.txt
+StyleTTS2/Dataset/Data/val_list.txt
+StyleTTS2/Dataset/Data/OOD_texts.txt
+```
+
+Dataset paths can be changed in the corresponding YAML files under `configs/`.
+
+---
+
+## FastSpeech2
+
+The unified FastSpeech2 pipeline includes:
+
+- dataset loading
 - text encoding
-- variance prediction
 - duration prediction
 - pitch prediction
 - energy prediction
-- mel-spectrogram generation
+- variance adaptation
+- mel-spectrogram prediction
 - PostNet
-- training loss
+- loss computation
+- training
 - checkpoint generation
 - validation
 
+The minimal training and validation workflow has been successfully tested.
+
 ---
 
-### EfficientSpeech
+## EfficientSpeech
 
-EfficientSpeech is a lightweight TTS architecture designed for efficient inference and reduced computational complexity.
+The unified EfficientSpeech implementation includes:
 
-The unified implementation provides:
-
+- dataset loading
 - acoustic model
 - duration prediction
 - pitch prediction
 - energy prediction
 - mel-spectrogram prediction
-- training pipeline
+- training
 - checkpoint generation
-- validation pipeline
+- validation
 
-The implementation is organized as a standalone PyTorch module and does not require importing the original local EfficientSpeech repository at runtime.
+The minimal training and validation workflow has been successfully tested.
 
 ---
 
-### StyleTTS2
+## StyleTTS2
 
-StyleTTS2 is a style-based TTS architecture containing multiple pretrained and trainable components.
+StyleTTS2 requires more components than FastSpeech2 and EfficientSpeech.
 
-The unified implementation contains the required modules for the minimal training and validation workflow, including:
+The required source modules have been migrated into:
+
+```text
+models/styletts2_modules/
+```
+
+The unified implementation contains the components required for the current reproduction workflow, including:
 
 - text encoder
 - style encoder
@@ -138,137 +170,17 @@ The unified implementation contains the required modules for the minimal trainin
 - PLBERT
 - diffusion modules
 - discriminators
-- STFT-based reconstruction loss
+- STFT loss
 
-The StyleTTS2 source dependencies required by the unified implementation have been migrated into:
-
-```text
-models/styletts2_modules/
-```
-
-The unified StyleTTS2 implementation has also been tested while the original local `StyleTTS2/` source directory was temporarily disabled, confirming that the new implementation does not depend on the original source tree at runtime.
+The model implementation itself was verified without relying on imports from the original StyleTTS2 source tree.
 
 ---
 
-# 3. Environment
+## StyleTTS2 Pretrained Weights
 
-The repository has been tested with:
+Several pretrained components are required locally.
 
-```text
-Python      3.10
-PyTorch     2.7.0
-CUDA        12.8
-GPU         NVIDIA GeForce RTX 5090
-```
-
-A CUDA-capable GPU is strongly recommended, especially for StyleTTS2.
-
----
-
-## 4. Installation
-
-### Clone the repository
-
-```bash
-git clone git@github.com:adelle888/TTS.git
-cd TTS
-```
-
-### Create a Conda environment
-
-```bash
-conda create -n tts_test python=3.10 -y
-conda activate tts_test
-```
-
-### Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-The main dependencies include:
-
-```text
-torch
-torchaudio
-torchvision
-numpy
-scipy
-scikit-learn
-pandas
-matplotlib
-librosa
-SoundFile
-pyworld
-PyYAML
-tqdm
-einops
-einops-exts
-munch
-transformers
-monotonic_align
-```
-
----
-
-# 5. Dataset Preparation
-
-## LJSpeech
-
-The audio dataset itself is **not included in this Git repository**.
-
-Prepare LJSpeech and place the waveform files under:
-
-```text
-data/
-└── LJSpeech-1.1/
-    └── wavs/
-        ├── LJ001-0001.wav
-        ├── LJ001-0002.wav
-        ├── LJ001-0003.wav
-        └── ...
-```
-
-The expected StyleTTS2 audio path is:
-
-```text
-data/LJSpeech-1.1/wavs
-```
-
-Dataset paths can be modified in the corresponding configuration files under:
-
-```text
-configs/
-```
-
----
-
-# 6. StyleTTS2 Pretrained Models
-
-StyleTTS2 requires several pretrained components.
-
-Large pretrained weight files are intentionally excluded from Git and must be prepared separately.
-
-The expected structure is:
-
-```text
-models/
-└── styletts2_modules/
-    └── Utils/
-        ├── ASR/
-        │   ├── config.yml
-        │   └── epoch_00080.pth
-        │
-        ├── JDC/
-        │   └── bst.t7
-        │
-        └── PLBERT/
-            ├── config.yml
-            └── step_1000000.t7
-```
-
-Required external weight files:
+Expected paths include:
 
 ```text
 models/styletts2_modules/Utils/ASR/epoch_00080.pth
@@ -276,53 +188,21 @@ models/styletts2_modules/Utils/JDC/bst.t7
 models/styletts2_modules/Utils/PLBERT/step_1000000.t7
 ```
 
-These files are excluded through `.gitignore`.
+These large pretrained weight files are excluded from Git.
 
-StyleTTS2 also uses:
+StyleTTS2 may also use:
 
 ```text
 microsoft/wavlm-base-plus
 ```
 
-through the Transformers ecosystem. The model may therefore need to be downloaded or available in the local model cache when required.
+which must be available locally or downloaded through the corresponding model library.
 
 ---
 
-# 7. Training
+## StyleTTS2 Training Example
 
-The training scripts are located under:
-
-```text
-training/
-```
-
-## FastSpeech2
-
-Run:
-
-```bash
-python training/fastspeech2.py
-```
-
-The FastSpeech2 pipeline has been tested for minimal training and checkpoint generation.
-
----
-
-## EfficientSpeech
-
-Run:
-
-```bash
-python training/efficientspeech.py
-```
-
-The EfficientSpeech pipeline has been tested for minimal training and checkpoint generation.
-
----
-
-## StyleTTS2
-
-For a minimal 10-step StyleTTS2 training test:
+A minimal 10-step training test can be run with:
 
 ```bash
 python training/styletts2.py \
@@ -333,23 +213,13 @@ python training/styletts2.py \
     --save-interval 10
 ```
 
-Example successful output:
+A successful test produced:
 
 ```text
-Training: 100% ... 10/10
-Step     10 | STFT Loss 1.048278
-
-[OK] StyleTTS2 training finished
-Final step : 10
+Step 10 | STFT Loss 1.048278
 ```
 
-The generated checkpoint is stored under:
-
-```text
-outputs/styletts2/checkpoints/
-```
-
-For example:
+and generated:
 
 ```text
 outputs/styletts2/checkpoints/step_10.pt
@@ -357,17 +227,7 @@ outputs/styletts2/checkpoints/step_10.pt
 
 ---
 
-# 8. Validation
-
-Validation scripts are located under:
-
-```text
-validation/
-```
-
-## StyleTTS2
-
-Example:
+## StyleTTS2 Validation Example
 
 ```bash
 python validation/styletts2.py \
@@ -377,204 +237,69 @@ python validation/styletts2.py \
     --max-batches 2
 ```
 
-A successful validation run produces output similar to:
+Example result:
 
 ```text
-============================================================
-Validation Results
-============================================================
 STFT / Mel Loss : 1.013630
-------------------------------------------------------------
 Batches         : 2
 Checkpoint      : step 10
-============================================================
 [OK] StyleTTS2 validation finished
-============================================================
 ```
 
-The numerical loss may vary between runs depending on initialization, random sampling, hardware, and training conditions.
+The exact loss may vary between runs.
 
 ---
 
-# 9. Reproduction Status
+## Reproduction Status
 
-The current repository has completed the following minimal reproduction tests:
+| Model | Dataset | Model | Training | Checkpoint | Validation |
+|---|---|---|---|---|---|
+| FastSpeech2 | Yes | Yes | Yes | Yes | Yes |
+| EfficientSpeech | Yes | Yes | Yes | Yes | Yes |
+| StyleTTS2 | Yes | Yes | Yes | Yes | Yes |
 
-| Model | Model Build | Dataset | Training | Checkpoint | Validation |
-|---|:---:|:---:|:---:|:---:|:---:|
-| FastSpeech2 | ✅ | ✅ | ✅ | ✅ | ✅ |
-| EfficientSpeech | ✅ | ✅ | ✅ | ✅ | ✅ |
-| StyleTTS2 | ✅ | ✅ | ✅ | ✅ | ✅ |
-
-For StyleTTS2, the verified workflow is:
-
-```text
-Dataset loading
-      ↓
-Model construction
-      ↓
-Forward / loss computation
-      ↓
-10-step training
-      ↓
-Checkpoint generation
-      ↓
-Validation
-```
-
-The tested StyleTTS2 10-step run produced:
-
-```text
-Training STFT Loss : 1.048278
-Validation Loss    : 1.013630
-Checkpoint Step    : 10
-```
-
-These values are provided only as a smoke-test reference and should **not** be interpreted as final model quality or paper-level reproduction results.
+All three models have completed the required minimal training and validation workflow.
 
 ---
 
-# 10. External Files and Git Policy
+## Git Policy
 
-The repository intentionally does **not** track:
+Large datasets, generated checkpoints, training outputs, and local upstream repositories are not tracked by Git.
 
-### Original upstream repositories
+Examples include:
 
 ```text
+data/
+outputs/
 FastSpeech2/
 EfficientSpeech/
 StyleTTS2/
 ```
 
-These directories may be retained locally for source comparison but are excluded from Git.
+Large pretrained StyleTTS2 weights are also excluded.
 
-### Datasets
-
-Large audio datasets are not committed to the repository.
-
-For example:
-
-```text
-data/
-```
-
-is treated as external data.
-
-### Training outputs
-
-Generated outputs are excluded:
-
-```text
-outputs/
-```
-
-This includes checkpoints such as:
-
-```text
-step_10.pt
-```
-
-### Pretrained weights
-
-Large pretrained model files such as:
-
-```text
-*.pth
-*.t7
-*.ckpt
-```
-
-are not committed when they correspond to external pretrained assets or generated checkpoints.
+This keeps the repository focused on the unified implementation and experiment configuration.
 
 ---
 
-# 11. Project Goal
+## Scope
 
-The purpose of this repository is to provide a clean and consistent experimental framework for comparing and reproducing different TTS architectures.
+A successful minimal reproduction in this repository means that a model can:
 
-Instead of preserving the directory structure of each original repository, the implementations are reorganized around the following common interface:
-
-```text
-Model
-  ↓
-Dataset
-  ↓
-Configuration
-  ↓
-Training
-  ↓
-Validation
-```
-
-This makes it easier to:
-
-- switch between TTS architectures
-- maintain a common environment
-- compare different models
-- reproduce minimal training experiments
-- validate model implementations
-- extend the repository with additional TTS models
-
----
-
-# 12. Current Scope
-
-This repository focuses on **minimal functional reproduction**.
-
-A successful reproduction means that the model can:
-
-1. load the required dataset;
-2. construct the model correctly;
-3. execute the forward/loss path;
+1. load its dataset;
+2. construct the model;
+3. execute forward/loss computation;
 4. perform training updates;
 5. save a checkpoint;
 6. load the checkpoint;
 7. complete validation.
 
-It does **not** currently imply:
-
-- full convergence;
-- reproduction of all paper metrics;
-- reproduction of all ablation studies;
-- full-scale training;
-- subjective listening evaluation;
-- exact reproduction of published MOS scores.
+This does not imply full paper-level reproduction, full convergence, MOS reproduction, or reproduction of all ablation experiments.
 
 ---
 
-# 13. Notes
+## Current Status
 
-Some audio files in LJSpeech are originally sampled at:
+The unified implementations of FastSpeech2, EfficientSpeech, and StyleTTS2 are functional.
 
-```text
-22050 Hz
-```
-
-and are resampled to the sampling rate expected by the corresponding pipeline when necessary.
-
-For example, during StyleTTS2 data loading, messages such as:
-
-```text
-LJ034-0118.wav 22050
-LJ016-0382.wav 22050
-```
-
-may appear. This indicates that the source waveform is being resampled and is not necessarily an error.
-
-Warnings related to deprecated `pkg_resources` usage from older versions of `librosa` may also appear during execution. These warnings do not prevent the verified training and validation workflow from running.
-
----
-
-# 14. Summary
-
-The repository currently provides a unified experimental implementation of:
-
-```text
-FastSpeech2
-EfficientSpeech
-StyleTTS2
-```
-
-All three models have completed the required minimal training and validation workflow.
-
-The repository is intended as a clean foundation for subsequent TTS reproduction experiments and model comparisons.
+The repository now provides a common foundation for subsequent TTS reproduction, model comparison, training experiments, and further development.
