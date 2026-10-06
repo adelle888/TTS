@@ -9,15 +9,13 @@ from tqdm import tqdm
 
 
 ROOT = Path(__file__).resolve().parents[1]
-STYLE_ROOT = ROOT / "StyleTTS2"
 
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(STYLE_ROOT))
 
 from models.styletts2 import build_styletts2
-from Dataset.meldataset import build_dataloader
-from utils import length_to_mask, log_norm
-from Model.losses import MultiResolutionSTFTLoss
+from datasets.styletts2 import build_dataloader
+from common.utils import length_to_mask, log_norm
+from models.styletts2_modules.losses import MultiResolutionSTFTLoss
 
 
 def load_config():
@@ -31,33 +29,24 @@ def resolve_style_path(path):
     if p.is_absolute():
         return str(p)
 
-    candidate = STYLE_ROOT / p
-    if candidate.exists():
-        return str(candidate)
-
-    candidate = STYLE_ROOT / "Dataset" / p
-    if candidate.exists():
-        return str(candidate)
-
-    return str(STYLE_ROOT / p)
-
+    return str(ROOT / p)
 
 def build_val_loader(cfg, batch_size, num_workers):
     data_cfg = cfg.get("data_params", {})
 
     val_path = data_cfg.get(
         "val_data",
-        str(STYLE_ROOT / "Dataset/Data/val_list.txt"),
+        str(ROOT / "datasets/styletts2_data/val_list.txt"),
     )
 
     root_path = data_cfg.get(
         "root_path",
-        "/data/huawei/liufei/TTS/FastSpeech2/raw_data/LJSpeech-1.1/wavs",
+        str(ROOT / "data/LJSpeech-1.1/wavs"),
     )
 
     ood_path = data_cfg.get(
         "OOD_data",
-        str(STYLE_ROOT / "Dataset/Data/OOD_texts.txt"),
+        str(ROOT / "datasets/styletts2_data/OOD_texts.txt"),
     )
 
     min_length = data_cfg.get(
@@ -69,7 +58,7 @@ def build_val_loader(cfg, batch_size, num_workers):
     ood_path = resolve_style_path(ood_path)
 
     if not Path(root_path).is_absolute():
-        root_path = str(STYLE_ROOT / root_path)
+        root_path = str(ROOT / root_path)
 
     with open(
         val_path,

@@ -56,3 +56,11 @@ requirements_full.txt
 EfficientSpeech/
 FastSpeech2/
 StyleTTS2/
+
+# StyleTTS2 pretrained weights
+models/styletts2_modules/Utils/ASR/*.pth
+models/styletts2_modules/Utils/JDC/*.t7
+models/styletts2_modules/Utils/PLBERT/*.t7
+
+# External datasets
+data/

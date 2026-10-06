@@ -1,4 +1,4 @@
-log_dir: /data/huawei/liufei/TTS/outputs/styletts2
+log_dir: outputs/styletts2
 first_stage_path: first_stage.pth
 save_freq: 1
 log_interval: 10
@@ -10,15 +10,15 @@ max_len: 400
 pretrained_model: ''
 second_stage_load_pretrained: true
 load_only_params: false
-F0_path: /data/huawei/liufei/TTS/StyleTTS2/Model/Utils/JDC/bst.t7
-ASR_config: /data/huawei/liufei/TTS/StyleTTS2/Model/Utils/ASR/config.yml
-ASR_path: /data/huawei/liufei/TTS/StyleTTS2/Model/Utils/ASR/epoch_00080.pth
-PLBERT_dir: /data/huawei/liufei/TTS/StyleTTS2/Model/Utils/PLBERT
+F0_path: models/styletts2_modules/Utils/JDC/bst.t7
+ASR_config: models/styletts2_modules/Utils/ASR/config.yml
+ASR_path: models/styletts2_modules/Utils/ASR/epoch_00080.pth
+PLBERT_dir: models/styletts2_modules/Utils/PLBERT
 data_params:
-  train_data: /data/huawei/liufei/TTS/StyleTTS2/Dataset/Data/train_list.txt
-  val_data: /data/huawei/liufei/TTS/StyleTTS2/Dataset/Data/val_list.txt
-  root_path: /data/huawei/liufei/TTS/FastSpeech2/raw_data/LJSpeech-1.1/wavs
-  OOD_data: /data/huawei/liufei/TTS/StyleTTS2/Dataset/Data/OOD_texts.txt
+  train_data: datasets/styletts2_data/train_list.txt
+  val_data: datasets/styletts2_data/val_list.txt
+  root_path: data/LJSpeech-1.1/wavs
+  OOD_data: datasets/styletts2_data/OOD_texts.txt
   min_length: 50
 preprocess_params:
   sr: 24000

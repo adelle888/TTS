@@ -1,3 +1,4 @@
+from munch import Munch
 import torch
 import torch.nn.functional as F
 
@@ -140,3 +141,46 @@ def to_device(data, device):
         energies,
         durations,
     )
+
+
+# ============================================================
+# StyleTTS2 utilities
+# ============================================================
+
+def length_to_mask(lengths):
+    mask = (
+        torch.arange(lengths.max())
+        .unsqueeze(0)
+        .expand(lengths.shape[0], -1)
+        .type_as(lengths)
+    )
+    mask = torch.gt(
+        mask + 1,
+        lengths.unsqueeze(1)
+    )
+    return mask
+
+
+def log_norm(x, mean=-4, std=4, dim=2):
+    """
+    normalized log mel -> mel -> norm -> log(norm)
+    """
+    x = torch.log(
+        torch.exp(x * std + mean).norm(dim=dim)
+    )
+    return x
+
+
+def recursive_munch(d):
+    if isinstance(d, dict):
+        return Munch(
+            (k, recursive_munch(v))
+            for k, v in d.items()
+        )
+    elif isinstance(d, list):
+        return [
+            recursive_munch(v)
+            for v in d
+        ]
+    else:
+        return d
