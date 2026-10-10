@@ -1,3 +1,4 @@
+import os
 import argparse
 import sys
 from pathlib import Path
@@ -15,7 +16,7 @@ sys.path.insert(0, str(ROOT))
 from models.styletts2 import build_styletts2
 from datasets.styletts2 import build_dataloader
 from common.utils import length_to_mask, log_norm
-from models.styletts2_modules.losses import MultiResolutionSTFTLoss
+from models.styletts2 import MultiResolutionSTFTLoss
 
 
 def load_config():
@@ -24,12 +25,20 @@ def load_config():
 
 
 def resolve_style_path(path):
-    p = Path(path)
+    value = os.path.expandvars(str(path))
 
-    if p.is_absolute():
-        return str(p)
+    if "${" in value:
+        raise RuntimeError(
+            f"Environment variable not set: {value}"
+        )
 
-    return str(ROOT / p)
+    p = Path(value).expanduser()
+
+    if not p.is_absolute():
+        p = ROOT / p
+
+    return str(p)
+
 
 def build_loader(cfg, batch_size, num_workers):
     data_cfg = cfg.get("data_params", {})
@@ -54,8 +63,7 @@ def build_loader(cfg, batch_size, num_workers):
     train_path = resolve_style_path(train_path)
     ood_path = resolve_style_path(ood_path)
 
-    if not Path(root_path).is_absolute():
-        root_path = str(ROOT / root_path)
+    root_path = resolve_style_path(root_path)
 
     with open(train_path, "r", encoding="utf-8") as f:
         train_list = f.readlines()
