@@ -303,3 +303,61 @@ This does not imply full paper-level reproduction, full convergence, MOS reprodu
 The unified implementations of FastSpeech2, EfficientSpeech, and StyleTTS2 are functional.
 
 The repository now provides a common foundation for subsequent TTS reproduction, model comparison, training experiments, and further development.
+
+## StyleTTS2 Reproduction Setup
+
+This repository provides a minimal StyleTTS2 training and validation workflow.
+
+### External assets and dataset
+
+Pretrained weights and datasets are not included in this repository.
+
+Set the following environment variables before running:
+
+    export PYTHONNOUSERSITE=1
+    export STYLETTS2_ASSETS=/path/to/tts_pretrained
+    export STYLETTS2_DATA=/path/to/styletts2_manifests
+
+The pretrained assets directory should contain:
+
+    ASR/config.yml
+    ASR/epoch_00080.pth
+    JDC/bst.t7
+    PLBERT/config.yml
+    PLBERT/step_1000000.t7
+
+The manifest directory should contain:
+
+    train_list.txt
+    val_list.txt
+    OOD_texts.txt
+
+LJSpeech audio files should be placed at the path configured by
+`data_params.root_path` in `configs/styletts2.yaml`.
+
+### Training
+
+    python -m training.styletts2 --steps 10 --batch-size 2 --num-workers 0 --log-interval 1 --save-interval 10
+
+### Validation
+
+    python -m validation.styletts2 --checkpoint outputs/styletts2/checkpoints/step_10.pt --batch-size 2 --num-workers 0 --max-batches 2
+
+### Minimal reproduction result
+
+- GPU: NVIDIA GeForce RTX 5090
+- Training: 10 steps
+- Validation: 2 batches
+- STFT / Mel Loss: 0.951130
+
+These results confirm execution of the minimal workflow, not
+full model convergence or final speech quality.
+
+### Attribution
+
+StyleTTS2 was developed by Yinghao Li and collaborators.
+Original repository: https://github.com/yl4579/StyleTTS2
+
+The original StyleTTS2 implementation is distributed under the MIT License.
+Retain the original copyright and license notice when redistributing
+derived source code.

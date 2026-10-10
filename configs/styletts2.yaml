@@ -10,15 +10,15 @@ max_len: 400
 pretrained_model: ''
 second_stage_load_pretrained: true
 load_only_params: false
-F0_path: models/styletts2_modules/Utils/JDC/bst.t7
-ASR_config: models/styletts2_modules/Utils/ASR/config.yml
-ASR_path: models/styletts2_modules/Utils/ASR/epoch_00080.pth
-PLBERT_dir: models/styletts2_modules/Utils/PLBERT
+F0_path: ${STYLETTS2_ASSETS}/JDC/bst.t7
+ASR_config: ${STYLETTS2_ASSETS}/ASR/config.yml
+ASR_path: ${STYLETTS2_ASSETS}/ASR/epoch_00080.pth
+PLBERT_dir: ${STYLETTS2_ASSETS}/PLBERT
 data_params:
-  train_data: StyleTTS2/Dataset/Data/train_list.txt
-  val_data: StyleTTS2/Dataset/Data/val_list.txt
+  train_data: ${STYLETTS2_DATA}/train_list.txt
+  val_data: ${STYLETTS2_DATA}/val_list.txt
   root_path: data/LJSpeech-1.1/wavs
-  OOD_data: StyleTTS2/Dataset/Data/OOD_texts.txt
+  OOD_data: ${STYLETTS2_DATA}/OOD_texts.txt
   min_length: 50
 preprocess_params:
   sr: 24000
