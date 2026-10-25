@@ -81,10 +81,8 @@ def main(args):
 
     optimizer = torch.optim.AdamW(
         model.parameters(),
-        lr=cfg.get("training", {}).get("lr", 1e-3),
-        weight_decay=cfg.get(
-            "training", {}
-        ).get("weight_decay", 1e-5),
+        lr=cfg["train"]["lr"],
+        weight_decay=cfg["train"]["weight_decay"],
     )
 
     output_dir = (

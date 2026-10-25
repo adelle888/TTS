@@ -3,10 +3,10 @@ dataset: LJSpeech
 preprocess:
   dataset: LJSpeech
   path:
-    corpus_path: /data/huawei/liufei/TTS/FastSpeech2/raw_data/LJSpeech-1.1
-    lexicon_path: lexicon/librispeech-lexicon.txt
-    raw_path: /data/huawei/liufei/TTS/FastSpeech2/raw_data/LJSpeech/LJSpeech
-    preprocessed_path: /data/huawei/liufei/TTS/FastSpeech2/preprocessed_data/LJSpeech
+    corpus_path: ./data/LJSpeech-1.1
+    lexicon_path: ./preprocess/fastspeech2/lexicon/librispeech-lexicon.txt
+    raw_path: ./data/fastspeech2/raw
+    preprocessed_path: ./data/fastspeech2/preprocessed
   preprocessing:
     val_size: 512
     text:
