@@ -19,7 +19,7 @@ matplotlib==3.7.5
 # Audio processing
 librosa==0.11.0
 SoundFile==0.14.0
-pyworld==0.3.2
+pyworld==0.3.5
 soxr==1.1.0
 
 # Text processing
@@ -37,7 +37,7 @@ munch==4.0.0
 # StyleTTS2 / PLBERT
 transformers==4.40.2
 Cython==3.3.0
-setuptools==84.0.0
+setuptools==80.9.0
 
 # StyleTTS2 monotonic alignment
 monotonic_align @ git+https://github.com/resemble-ai/monotonic_align.git
